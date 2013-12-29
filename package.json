@@ -1,0 +1,22 @@
+{
+  "name": "asmodeus-server",
+  "version": "0.0.0",
+  "description": "PROJECT CRAFTY: Super daemon game hosting service.",
+  "main": "asmodeus.js",
+  "dependencies": {
+    "daemon": "~1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/BadOPCode/crafty.git"
+  },
+  "author": "Shawn Rapp, Sean Arnold",
+  "license": "GPL3",
+  "bugs": {
+    "url": "https://github.com/BadOPCode/crafty/issues"
+  }
+}
