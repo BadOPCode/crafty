@@ -1,3 +1,5 @@
+// Shawn ~ crappy demo server that is created when you make a new Node project in cloud9
+// kept it in the base as a guide for making the RCON services.
 //
 // # SimpleServer
 //

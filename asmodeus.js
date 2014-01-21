@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 /***
- * asmodeus.js
- * 
+ * asmodeus.js - Shawn Rapp 2013-12-19
  * Asmodeus Server
- * License: GPL v3
- * Authors: Sean Arnold, Shawn Rapp
- * Date: 2013-12-19
+ * @license GPL version 3.  Read LICENSE for more information.
+ * @fileOverview Super daemon game hosting server.
+ * Project Authors: Sean Arnold (GIBson3), Shawn Rapp (BadOPCode)
  */
 
 // WARNING: Everything above this line will be executed twice
@@ -44,6 +43,7 @@ function createWorker(worker_type) {
     else {
         var ehs = require("library/ehs");
         var start_script = worker_type+'/start.js';
+        this.workerType = worker_type;
         if (ehs.FileExists(start_script)) {
             require(start_script);
         } else {
@@ -65,20 +65,56 @@ function createWorkers(worker_type, n) {
 }
 
 /**
+ * terminateWorker - Shawn Rapp 2014-1-15
+ * Terminates the worker specified with a signal.
+ * @param {number} uniqueID Unique identifier that specifies the worker position in the cluster stack
+ * @param {string} signal The signal to send to process.
+ */
+function terminateWorker(uniqueID, signal) {
+    var worker;
+    if (cluster.workers.hasOwnProperty(uniqueID)) {
+        worker = cluster.workers[uniqueID];
+        worker.removeAllListeners();
+        worker.process.kill(signal);
+    }
+}
+
+/**
  * terminateAllWorkers - Shawn Rapp 2013-12-29
  * Sends the signal to terminate all workers and remove all event listeners
  * @param {number} signal Terminate signal to send
  */
 function terminateAllWorkers(signal) {
-    var uniqueID,
-    worker;
+    var uniqueID;
 
     for (uniqueID in cluster.workers) {
-        if (cluster.workers.hasOwnProperty(uniqueID)) {
-            worker = cluster.workers[uniqueID];
-            worker.removeAllListeners();
-            worker.process.kill(signal);
-        }
+        terminateWorker(uniqueID, signal);
+    }
+}
+
+/**
+ * resetWorker - Shawn Rapp 2014-1-16
+ * Terminates and starts a fresh worker of the same type.
+ * @param {number} uniqueID Unique identifier that specifies the worker in the stack to restart
+ */
+function resetWorker(uniqueID) {
+    var worker, worker_type;
+    
+    worker = cluster.workers[uniqueID];
+    worker_type = worker.workerType;
+    terminateWorker(uniqueID, 'SIGTERM');
+    createWorker(worker_type);
+}
+
+/**
+ * resetAllWorkers - Shawn Rapp 2014-1-16
+ * Resets all workers in cluster stack.
+ */
+function resetAllWorkers() {
+    var uniqueID;
+
+    for (uniqueID in cluster.workers) {
+        resetWorker(uniqueID);
     }
 }
 
@@ -86,16 +122,15 @@ function terminateAllWorkers(signal) {
  * Restarts the workers.
  */
 process.on('SIGHUP', function () {
-  killAllWorkers('SIGTERM');
-  createWorkers(numCPUs * 2);
+    resetAllWorkers();
 });
 
 /**
  * Gracefully Shuts down the workers.
  */
 process.on('SIGTERM', function () {
-  killAllWorkers('SIGTERM');
+  terminateAllWorkers('SIGTERM');
 });
 
 // Create two children for each CPU
-createWorkers(numCPUs * 2)
+createWorkers("web", numCPUs)

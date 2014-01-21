@@ -1,8 +1,8 @@
-/*
-rcon.js - Shawn Rapp 2013-12-22
-Description: Interfaces into Valve's rcon protocol
-License: GPL version 3.  Read LICENSE for more information.
-*/
+/**
+ * rcon.js - Shawn Rapp 2013-12-22
+ * @fileOverview Interfaces into Valve's rcon protocol
+ * @license GPL version 3.  Read LICENSE for more information.
+ */
 var net = require('net');
 
 var AUTH_TYPE=0x03;

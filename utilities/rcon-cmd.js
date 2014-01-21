@@ -1,4 +1,4 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 /*
 rcon-cmd.js - Shawn Rapp 2013-12-22
 Description: Command line scripte for sending commands to a game instance via
