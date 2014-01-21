@@ -132,5 +132,8 @@ process.on('SIGTERM', function () {
   terminateAllWorkers('SIGTERM');
 });
 
-// Create two children for each CPU
-createWorkers("web", numCPUs)
+// Create a web child processor
+createWorkers('web', mghs.info.number_of_cpus);
+
+// Create a instance manager processor
+createWorker('instance');
